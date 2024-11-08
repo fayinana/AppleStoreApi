@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# dotenv environment files
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# macOS system files
+.DS_Store
+
+# logs
+logs/
+*.log
+
+# coverage reports
+coverage/
+
+# build files
+dist/
+build/
+
+# test files
+test/
