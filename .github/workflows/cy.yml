@@ -34,6 +34,6 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          DATABASE_TEST: mongodb://localhost:27017/testdb
-          JWT_SECRET: your_jwt_secret
-          NODE_ENV: test
+          DATABASE_TEST: mongodb://localhost:27017/apple-store
+          JWT_SECRET: the-secrate-key-for-aple-store
+          NODE_ENV: development
