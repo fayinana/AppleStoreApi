@@ -3,7 +3,6 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
-// Define the User schema with fields: first name, last name, full name, email, password, role, order history, and cart.
 const userSchema = mongoose.Schema(
   {
     firstName: {

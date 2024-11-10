@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Cart from "./cartModel.js";
 
 const productSchema = new mongoose.Schema(
   {
@@ -69,6 +70,26 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.pre("save", function (next) {
+  if (this.isModified("price")) {
+    this._isPriceModified = true;
+  }
+  next();
+});
+
+productSchema.post("save", async function (doc, next) {
+  if (this._isPriceModified) {
+    try {
+      await Cart.updateMany(
+        { product: doc._id },
+        { $set: { price: doc.price } }
+      );
+    } catch (err) {
+      console.error("Error updating cart prices:", err);
+    }
+  }
+  next();
+});
 productSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();
