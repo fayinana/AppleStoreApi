@@ -35,7 +35,6 @@ const orderSchema = new mongoose.Schema(
     },
     paymentIntentId: {
       type: String,
-      required: [true, "Payment intent ID from Stripe is required"],
     },
     paymentStatus: {
       type: String,
@@ -46,6 +45,11 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["processing", "shipped", "delivered", "canceled"],
       default: "processing",
+    },
+    shippingStatus: {
+      type: String,
+      enum: ["not_shipped", "in_transit", "delivered"],
+      default: "not_shipped",
     },
     createdAt: {
       type: Date,

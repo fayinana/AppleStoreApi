@@ -1,0 +1,120 @@
+[
+  {
+    "name": "Mac Mini (M2/M2 Pro, 2023)",
+    "category": "Mac Mini",
+    "description": "Compact desktop computer powered by M2 and M2 Pro chips.",
+    "price": 699,
+    "stock": 120,
+    "coverImage": "https://upload.wikimedia.org/mac-mini.jpg",
+    "images": [
+      "https://upload.wikimedia.org/mac-mini-1.jpg",
+      "https://upload.wikimedia.org/mac-mini-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Processor", "value": "M2/M2 Pro" },
+      { "key": "Release Date", "value": "January 24, 2023" }
+    ]
+  },
+  {
+    "name": "MacBook Pro (M2 Pro/M2 Max) (14-inch, 2023)",
+    "category": "MacBook Pro",
+    "description": "Professional laptop with 14-inch display, M2 Pro/Max chips.",
+    "price": 1999,
+    "stock": 80,
+    "coverImage": "https://upload.wikimedia.org/macbook-pro-14.jpg",
+    "images": [
+      "https://upload.wikimedia.org/macbook-pro-14-1.jpg",
+      "https://upload.wikimedia.org/macbook-pro-14-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Screen Size", "value": "14 inches" },
+      { "key": "Processor", "value": "M2 Pro/M2 Max" },
+      { "key": "Battery Life", "value": "18 hours" }
+    ]
+  },
+  {
+    "name": "iPhone 15 Pro",
+    "category": "iPhone",
+    "description": "Premium iPhone with A17 Bionic chip and titanium body.",
+    "price": 999,
+    "stock": 150,
+    "coverImage": "https://upload.wikimedia.org/iphone-15-pro.jpg",
+    "images": [
+      "https://upload.wikimedia.org/iphone-15-pro-1.jpg",
+      "https://upload.wikimedia.org/iphone-15-pro-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Processor", "value": "A17 Bionic" },
+      { "key": "Camera", "value": "48MP Triple Camera System" },
+      { "key": "Material", "value": "Titanium" }
+    ]
+  },
+  {
+    "name": "Apple Watch Ultra 2",
+    "category": "Apple Watch",
+    "description": "Durable and feature-packed smartwatch for extreme activities.",
+    "price": 799,
+    "stock": 70,
+    "coverImage": "https://upload.wikimedia.org/apple-watch-ultra-2.jpg",
+    "images": [
+      "https://upload.wikimedia.org/apple-watch-ultra-2-1.jpg",
+      "https://upload.wikimedia.org/apple-watch-ultra-2-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Durability", "value": "Waterproof up to 100m" },
+      { "key": "Battery Life", "value": "36 hours" },
+      { "key": "Material", "value": "Titanium" }
+    ]
+  },
+  {
+    "name": "MacBook Air (15-inch, M2, 2023)",
+    "category": "MacBook Air",
+    "description": "Thin and light laptop with M2 chip and 15-inch display.",
+    "price": 1299,
+    "stock": 90,
+    "coverImage": "https://upload.wikimedia.org/macbook-air-15.jpg",
+    "images": [
+      "https://upload.wikimedia.org/macbook-air-15-1.jpg",
+      "https://upload.wikimedia.org/macbook-air-15-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Processor", "value": "M2" },
+      { "key": "Weight", "value": "3.3 pounds" },
+      { "key": "Battery Life", "value": "18 hours" }
+    ]
+  },
+  {
+    "name": "iMac (24-inch, M3, 2023)",
+    "category": "iMac",
+    "description": "Sleek all-in-one desktop with 24-inch 4.5K Retina display.",
+    "price": 1499,
+    "stock": 60,
+    "coverImage": "https://upload.wikimedia.org/imac-24.jpg",
+    "images": [
+      "https://upload.wikimedia.org/imac-24-1.jpg",
+      "https://upload.wikimedia.org/imac-24-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Display", "value": "24-inch 4.5K Retina" },
+      { "key": "Processor", "value": "M3" },
+      { "key": "Color Options", "value": "7 vibrant colors" }
+    ]
+  },
+  {
+    "name": "HomePod (2nd Generation)",
+    "category": "Speakers",
+    "description": "Smart speaker with exceptional sound and Siri integration.",
+    "price": 299,
+    "stock": 200,
+    "coverImage": "https://upload.wikimedia.org/homepod-2nd-gen.jpg",
+    "images": [
+      "https://upload.wikimedia.org/homepod-2nd-gen-1.jpg",
+      "https://upload.wikimedia.org/homepod-2nd-gen-2.jpg"
+    ],
+    "specifications": [
+      { "key": "Sound", "value": "Spatial Audio" },
+      { "key": "Siri", "value": "Built-in assistant" },
+      { "key": "Connectivity", "value": "Wi-Fi, Bluetooth 5.0" }
+    ]
+  }
+]

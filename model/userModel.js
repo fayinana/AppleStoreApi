@@ -5,6 +5,11 @@ import crypto from "crypto";
 
 const userSchema = mongoose.Schema(
   {
+    image: {
+      type: String,
+      default:
+        "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/main/file/image/user/default.jpg",
+    },
     firstName: {
       type: String,
       required: [true, "First name is required."],
@@ -50,12 +55,11 @@ const userSchema = mongoose.Schema(
         ref: "Order",
       },
     ],
-    cart: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Cart",
-      },
-    ],
+    cart: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Cart",
+    },
+
     active: {
       type: Boolean,
       default: true,
@@ -129,7 +133,6 @@ userSchema.methods.createPasswordResetToken = function () {
     .digest("hex");
 
   this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
-  console.log("Generated Hashed Token:", this.passwordResetToken);
   return resetToken;
 };
 const User = mongoose.model("User", userSchema);

@@ -1,7 +1,63 @@
+import multer from "multer";
+import sharp from "sharp";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 import User from "./../model/userModel.js";
 import { deleteOne, getAll, getOne, updateOne } from "./handlerFactory.js";
+import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config(".env");
+
+const multerStorage = multer.memoryStorage();
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("not an image! please upload only image "), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+export const uploadUserPhoto = upload.single("image");
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO;
+const GITHUB_API_URL = process.env.GITHUB_API_URL.replace(
+  "<GITHUB_REPO>",
+  GITHUB_REPO
+);
+
+export const resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  const filename = `user-${req.user._id}-${Date.now()}.jpeg`;
+  const buffer = await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toBuffer();
+
+  const response = await axios.put(
+    `${GITHUB_API_URL}user/${filename}`,
+    {
+      message: `Upload image ${filename}`,
+      content: buffer.toString("base64"),
+    },
+    {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (response.status !== 201) {
+    return next(new AppError("Failed to upload image to GitHub", 500));
+  }
+
+  req.file.filename = filename;
+  next();
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -45,6 +101,9 @@ export const createUser = catchAsync(async (req, res, next) => {
 });
 
 export const updateMe = catchAsync(async (req, res, next) => {
+  // TODO:
+  const githubURL =
+    "https://raw.githubusercontent.com/fayinana/HomeTradeNetwork-API-/refs/heads/main/file/image/user/";
   if (req.body.password) {
     return next(
       new AppError(
@@ -53,7 +112,15 @@ export const updateMe = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const filteredBody = filterObj(req.body, "firstName", "lastName", "email");
+  const filteredBody = filterObj(
+    req.body,
+    "firstName",
+    "lastName",
+    "email",
+    "image"
+  );
+  if (req.file) filteredBody.image = `${githubURL}${req.file.filename}`;
+
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
     new: true,
     runValidators: true,

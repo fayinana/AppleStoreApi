@@ -64,6 +64,7 @@ export const createOne = (Model) =>
 export const getAll = (Model, defaultFilter = {}) =>
   catchAsync(async (req, res, next) => {
     const filter = { ...defaultFilter };
+    const totalDoc = await Model.find();
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
@@ -75,5 +76,6 @@ export const getAll = (Model, defaultFilter = {}) =>
       status: "success",
       result: doc.length,
       data: doc,
+      total: totalDoc.length,
     });
   });

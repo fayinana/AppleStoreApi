@@ -16,8 +16,8 @@ router.post("/login", login);
 router.post("/forgotPassword", forgetPassword);
 router.post("/resetPassword/:token", resetPassword);
 
-// router.use(protect);
+router.use(protect);
 router.post("/logout", logout);
-router.post("/changePassword", updatePassword);
+router.patch("/changePassword", updatePassword);
 
 export default router;

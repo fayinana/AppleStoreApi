@@ -8,7 +8,12 @@ router.patch("/reactivateMe", userController.reactivateUser);
 router.use(protect);
 
 router.get("/me", userController.getMe, userController.getUser);
-router.patch("/updateMe", userController.updateMe);
+router.patch(
+  "/updateMe",
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe
+);
 router.delete("/deleteMe", userController.deleteMe);
 
 router.use(restrictTo("admin"));

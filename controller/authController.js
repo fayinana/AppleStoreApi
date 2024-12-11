@@ -8,7 +8,8 @@ import User from "../model/userModel.js";
 // Utilities
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
-import sendEmail from "../utils/email.js";
+import Email from "../utils/email.js";
+
 // Helper Functions
 function signJWT(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -23,7 +24,8 @@ function createSendToken(statusCode, user, res) {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    sameSite: "None",
+    // sameSite: "None",
+    // signed: true,
   };
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
   res.cookie("jwt", token, cookieOptions);
@@ -48,6 +50,8 @@ export const signup = catchAsync(async (req, res, next) => {
     cart,
     order,
   });
+  const mail = new Email(user, "http://localhost:5371/");
+  await mail.sendWelcome();
   createSendToken(201, user, res);
 });
 
@@ -81,7 +85,6 @@ export const protect = catchAsync(async (req, res, next) => {
   } else {
     token = req.cookies.jwt;
   }
-
   if (!token) {
     return next(
       new AppError(
@@ -135,17 +138,14 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  const frontendURL = "http://localhost:5371";
 
-  const message = `Forgot your password? Reset it using this link: ${resetURL}. If you did not request a password reset, please ignore this email.`;
+  const resetURL = `${frontendURL}/reset-password/${resetToken}`;
+
+  // const message = `Forgot your password? Reset it using this link: ${resetURL}. If you did not request a password reset, please ignore this email.`;
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your password reset token (valid for 10 minutes)",
-      message,
-    });
+    const mail = new Email(user, resetURL);
+    await mail.resetPasswordLink();
 
     res.status(200).json({
       status: "success",
@@ -155,7 +155,6 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetTokenExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    console.log(err);
 
     return next(
       new AppError("Error sending email. Please try again later.", 500)
@@ -163,19 +162,15 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   }
 });
 export const resetPassword = catchAsync(async (req, res, next) => {
-  console.log("Received Token:", req.params.token);
-
   const hashedToken = crypto
     .createHash("sha256")
     .update(req.params.token)
     .digest("hex");
-  console.log("Hashed Token for Query:", hashedToken);
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetTokenExpires: { $gt: Date.now() },
   });
-  console.log("Queried User:", user);
 
   if (!user) {
     return next(
