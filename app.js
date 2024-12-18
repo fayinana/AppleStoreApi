@@ -53,6 +53,7 @@ app.use(
       "maxGroupSize",
       "difficulty",
       "price",
+      "category",
     ],
   })
 );

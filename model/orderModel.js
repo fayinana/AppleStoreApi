@@ -75,6 +75,16 @@ orderSchema.pre("save", function (next) {
   next();
 });
 
+orderSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "products.product",
+    select: "name price category coverImage",
+  }).populate({
+    path: "user",
+    select: "name image fullName firstName lastName email createdAt",
+  });
+  next();
+});
 const Order = mongoose.model("Order", orderSchema);
 
 export default Order;

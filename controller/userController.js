@@ -91,7 +91,7 @@ export const getMe = catchAsync(async (req, res, next) => {
   next();
 });
 
-export const getAllUsers = getAll(User, { active: true });
+export const getAllUsers = getAll(User);
 
 export const createUser = catchAsync(async (req, res, next) => {
   res.status(201).json({
