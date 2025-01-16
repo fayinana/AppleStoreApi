@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { htmlToText } from "html-to-text";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config("./.env");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -22,7 +22,7 @@ class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === "production") {
-      return sgMail;
+      return null;
     } else {
       return createTransport({
         host: process.env.EMAIL_HOST,

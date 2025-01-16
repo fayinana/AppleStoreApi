@@ -93,3 +93,16 @@ export const getMonthlyReport = catchAsync(async (req, res, next) => {
     monthlyStat,
   });
 });
+
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    order.status = status;
+    await order.save();
+  } catch (error) {
+    console.error(`Error updating order status: ${error.message}`);
+  }
+};

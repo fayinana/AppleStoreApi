@@ -61,6 +61,50 @@ app.use(
 app.use(compression());
 app.use(cookieParser());
 
+import Stripe from "stripe";
+import bodyParser from "body-parser";
+import { updateOrderStatus } from "./controller/orderController.js";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+app.post(
+  "/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  (req, res) => {
+    const sig = req.headers["stripe-signature"];
+
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error(`Webhook Error: ${err.message}`);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object;
+        // Update order status to 'paid'
+        updateOrderStatus(paymentIntent.metadata.orderId, "paid");
+        break;
+      case "payment_intent.payment_failed":
+        const paymentFailedIntent = event.data.object;
+        // Update order status to 'failed'
+        updateOrderStatus(paymentFailedIntent.metadata.orderId, "failed");
+        break;
+      // Add more event types as needed
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a response to acknowledge receipt of the event
+    res.json({ received: true });
+  }
+);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);

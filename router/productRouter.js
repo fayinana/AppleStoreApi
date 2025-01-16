@@ -17,14 +17,17 @@ import { protect, restrictTo } from "../controller/authController.js";
 const router = express.Router();
 
 router.get("/relatedProduct/:category", relatedProduct, getAllProducts);
-router.route("/").get(getAllProducts).post(
-  protect,
-  restrictTo("admin"),
-  uploadProductImages,
-  resizeProductImages, // Resize and upload to GitHub, updates req.body with filenames
-  addImageUrl, // Add full GitHub image URLs to req.body
-  createProduct // Create product with the updated req.body
-);
+router
+  .route("/")
+  .get(getAllProducts)
+  .post(
+    protect,
+    restrictTo("admin"),
+    uploadProductImages,
+    resizeProductImages,
+    addImageUrl,
+    createProduct
+  );
 
 router
   .route("/:id")
@@ -32,10 +35,10 @@ router
   .patch(
     protect,
     restrictTo("admin"),
-    uploadProductImages, // Allow updates to images
-    resizeProductImages, // Resize and upload to GitHub
-    addImageUrl, // Add GitHub URLs
-    updateProduct // Update product
+    uploadProductImages,
+    resizeProductImages,
+    addImageUrl,
+    updateProduct
   )
   .delete(protect, restrictTo("admin"), deleteProduct);
 
