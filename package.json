@@ -4,7 +4,8 @@
   "main": "app.js",
   "scripts": {
     "start:dev": "cross-env NODE_ENV=development nodemon server.js",
-    "start:prod": "cross-env NODE_ENV=production nodemon server.js",
+    "start:prodh": "cross-env NODE_ENV=production nodemon server.js",
+    "start:prod": "server.js",
     "test": "jest"
   },
   "type": "module",
