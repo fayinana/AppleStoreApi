@@ -17,13 +17,21 @@ import reviewRouter from "./router/reviewRoutes.js";
 import cartRouter from "./router/cartRouter.js";
 import orderRouter from "./router/orderRouter.js";
 import checkoutRouter from "./router/checkoutRouter.js";
+import Stripe from "stripe";
+import bodyParser from "body-parser";
+import { updateOrderStatus } from "./controller/orderController.js";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 dotenv.config({ path: ".env" });
 
 const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5371", "http://10.240.163.26:5371"],
+    origin: [
+      "http://localhost:5371",
+      "http://10.240.163.26:5371",
+      "https://apple-store-front-end-one.vercel.app/",
+    ],
     credentials: true,
   })
 );
@@ -61,17 +69,11 @@ app.use(
 app.use(compression());
 app.use(cookieParser());
 
-import Stripe from "stripe";
-import bodyParser from "body-parser";
-import { updateOrderStatus } from "./controller/orderController.js";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 app.post(
   "/webhook",
   bodyParser.raw({ type: "application/json" }),
   (req, res) => {
     const sig = req.headers["stripe-signature"];
-
     let event;
     try {
       event = stripe.webhooks.constructEvent(
@@ -83,25 +85,18 @@ app.post(
       console.error(`Webhook Error: ${err.message}`);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-
-    // Handle the event
     switch (event.type) {
       case "payment_intent.succeeded":
         const paymentIntent = event.data.object;
-        // Update order status to 'paid'
         updateOrderStatus(paymentIntent.metadata.orderId, "paid");
         break;
       case "payment_intent.payment_failed":
         const paymentFailedIntent = event.data.object;
-        // Update order status to 'failed'
         updateOrderStatus(paymentFailedIntent.metadata.orderId, "failed");
         break;
-      // Add more event types as needed
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-
-    // Return a response to acknowledge receipt of the event
     res.json({ received: true });
   }
 );
