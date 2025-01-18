@@ -24,6 +24,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 dotenv.config({ path: ".env" });
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(
   cors({

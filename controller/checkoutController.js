@@ -56,8 +56,8 @@ export const createCheckoutSession = catchAsync(async (req, res, next) => {
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: "payment",
-    success_url: `http://localhost:5371/checkoutSuccess/${newOrder._id}`,
-    cancel_url: "http://localhost:5371/cart",
+    success_url: `https://apple-store-front-end-one.vercel.app/checkoutSuccess/${newOrder._id}`,
+    cancel_url: "https://apple-store-front-end-one.vercel.app/cart",
     customer_email: user.email,
     shipping_address_collection: {
       allowed_countries: ["US", "CA", "GB", "AU"],

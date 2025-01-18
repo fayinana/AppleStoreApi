@@ -50,7 +50,7 @@ export const signup = catchAsync(async (req, res, next) => {
     cart,
     order,
   });
-  const mail = new Email(user, "http://localhost:5371/");
+  const mail = new Email(user, "https://apple-store-front-end-one.vercel.app/");
   await mail.sendWelcome();
   createSendToken(201, user, res);
 });
@@ -138,7 +138,7 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const frontendURL = "http://localhost:5371";
+  const frontendURL = "https://apple-store-front-end-one.vercel.app/";
 
   const resetURL = `${frontendURL}/reset-password/${resetToken}`;
 
