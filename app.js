@@ -26,17 +26,36 @@ dotenv.config({ path: ".env" });
 const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5371",
-      "http://10.240.163.26:5371",
-      "https://apple-store-front-end-one.vercel.app/",
-    ],
-    credentials: true,
-  })
-);
-app.options("*", cors());
+// app.use(
+//   cors({
+//     origin: [
+//       "http://localhost:5371",
+//       "http://10.240.163.26:5371",
+//       "https://apple-store-front-end-one.vercel.app/",
+//     ],
+//     credentials: true,
+//   })
+// );
+
+const allowedOrigins = [
+  "http://localhost:5371",
+  "http://10.240.163.26:5371",
+  "https://apple-store-front-end-one.vercel.app/",
+];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET, POST, PUT, DELETE, OPTIONS",
+  credentials: true,
+  allowedHeaders: "Content-Type, Authorization",
+};
+
+app.use(cors(corsOptions));
 
 app.use(helmet());
 
