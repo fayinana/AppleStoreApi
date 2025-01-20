@@ -27,7 +27,7 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 
-const corsOptions: cors.CorsOptions = {
+const corsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:5371",
