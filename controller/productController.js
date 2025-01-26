@@ -6,9 +6,6 @@ import Product from "../model/productModel.js";
 import { createOne, deleteOne, getAll, getOne } from "./handlerFactory.js";
 import catchAsync from "../utils/catchAsync.js";
 
-dotenv.config();
-
-// Multer Configuration
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
@@ -35,87 +32,81 @@ export const resizeProductImages = async (req, res, next) => {
   const githubPath = "file/image/product";
   const githubToken = process.env.GITHUB_TOKEN;
 
+  const githubUrl = `https://api.github.com/repos/fayinana/${githubRepo}/contents/${githubPath}/`;
+
   const uploadToGitHub = async (buffer, filename) => {
     const imageBase64 = buffer.toString("base64");
     const githubUrl = `https://api.github.com/repos/fayinana/${githubRepo}/contents/${githubPath}/${filename}`;
 
+    let sha = null;
+
     try {
-      // Check if file exists and get SHA
-      const existingFile = await axios.get(githubUrl, {
+      // Step 1: Check if the file exists to get its sha
+      const response = await axios.get(githubUrl, {
         headers: { Authorization: `token ${githubToken}` },
       });
-      const sha = existingFile.data.sha;
-
-      // Overwrite file if it exists
-      await axios.put(
-        githubUrl,
-        {
-          message: `Update ${filename}`,
-          content: imageBase64,
-          sha,
-          branch: githubBranch,
-        },
-        {
-          headers: { Authorization: `token ${githubToken}` },
-        }
-      );
+      sha = response.data.sha; // Get the existing file sha
     } catch (err) {
-      if (err.response && err.response.status === 404) {
-        // File does not exist, create it
-        await axios.put(
-          githubUrl,
-          {
-            message: `Create ${filename}`,
-            content: imageBase64,
-            branch: githubBranch,
-          },
-          {
-            headers: { Authorization: `token ${githubToken}` },
-          }
-        );
-      } else {
-        console.error(`GitHub Upload Error: ${err.message}`);
-        throw err;
+      if (err.response && err.response.status !== 404) {
+        throw new Error(`Error checking file existence: ${err.message}`);
       }
+      // If 404, it means the file doesn't exist, so we continue without sha
     }
+
+    // Step 2: Upload (or overwrite) the file
+    const uploadData = {
+      message: `Upload ${filename}`,
+      content: imageBase64,
+      branch: githubBranch,
+    };
+
+    if (sha) {
+      uploadData.sha = sha; // Include sha to overwrite the file
+    }
+
+    await axios.put(githubUrl, uploadData, {
+      headers: { Authorization: `token ${githubToken}` },
+    });
   };
 
   try {
-    // Handle cover image
+    // 1) Cover Image
     if (req.files.coverImage) {
-      const filename = `products-${Date.now()}-cover-${Math.random().toFixed(
-        8
-      )}.jpeg`;
-      const buffer = await sharp(req.files.coverImage[0].buffer)
+      const filename = `products-${Date.now()}-cover-${
+        Math.random() * 100000000000
+      }.jpeg`;
+      await sharp(req.files.coverImage[0].buffer)
         .resize(500, 500)
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
-        .toBuffer();
+        .toBuffer()
+        .then(async (buffer) => uploadToGitHub(buffer, filename));
 
-      await uploadToGitHub(buffer, filename);
       req.body.coverImage = filename;
     }
 
-    // Handle additional images
+    // 2) Additional Images
     if (req.files.images) {
       req.body.images = [];
-      for (const file of req.files.images) {
-        const filename = `products-${uuidv4()}.jpeg`;
-        const buffer = await sharp(file.buffer)
-          .resize(1000, 1000)
-          .toFormat("jpeg")
-          .jpeg({ quality: 90 })
-          .toBuffer();
+      await Promise.all(
+        req.files.images.map(async (file) => {
+          const filename = `products-${uuidv4()}.jpeg`;
+          await sharp(file.buffer)
+            .resize(1000, 1000)
+            .toFormat("jpeg")
+            .jpeg({ quality: 90 })
+            .toBuffer()
+            .then(async (buffer) => uploadToGitHub(buffer, filename));
 
-        await uploadToGitHub(buffer, filename);
-        req.body.images.push(filename);
-      }
+          req.body.images.push(filename);
+        })
+      );
     }
 
     next();
   } catch (err) {
-    console.error("Error processing images:", err.message);
-    res.status(500).json({ message: "Failed to process images." });
+    console.error("Error uploading to GitHub:", err.message);
+    res.status(500).json({ message: "Failed to upload images to GitHub" });
   }
 };
 
@@ -139,7 +130,13 @@ export const addImageUrl = (req, res, next) => {
 
 // Controller for creating a new product
 export const createProduct = createOne(Product);
-
+// catchAsync(async (req, res) => {
+//   const product = await Product.create(req.body);
+//   res.status(201).json({
+//     status: "success",
+//     data: product,
+//   });
+// });
 export const getAllProducts = getAll(Product);
 export const getProduct = getOne(Product, { path: "reviews" });
 export const deleteProduct = deleteOne(Product);
