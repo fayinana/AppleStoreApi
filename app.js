@@ -32,8 +32,8 @@ const corsOptions = {
     const allowedOrigins = [
       "http://localhost:5371",
       "http://10.240.163.26:5371",
-      "https://apple-store-front-end-one.vercel.app/",
-      "https://lambent-duckanoo-d48cf4.netlify.app/",
+      "https://apple-store-front-end-one.vercel.app",
+      "https://lambent-duckanoo-d48cf4.netlify.app",
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {

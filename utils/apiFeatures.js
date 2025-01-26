@@ -47,6 +47,19 @@ class APIFeatures {
     this.query = this.query.skip(skip).limit(limit);
     return this;
   }
+
+  search() {
+    if (this.queryStr.search) {
+      const searchQuery = this.queryStr.search;
+      this.query = this.query.find({
+        $or: [
+          { name: { $regex: searchQuery, $options: "i" } },
+          { category: { $regex: searchQuery, $options: "i" } },
+        ],
+      });
+    }
+    return this;
+  }
 }
 
 export default APIFeatures;
