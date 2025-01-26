@@ -98,11 +98,11 @@ app.post(
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
     switch (event.type) {
-      case "payment_intent.succeeded":
+      case "checkout.session.succeeded":
         const paymentIntent = event.data.object;
         updateOrderStatus(paymentIntent.metadata.orderId, "paid");
         break;
-      case "payment_intent.payment_failed":
+      case "checkout.session.failed":
         const paymentFailedIntent = event.data.object;
         updateOrderStatus(paymentFailedIntent.metadata.orderId, "failed");
         break;
@@ -112,6 +112,7 @@ app.post(
     res.json({ received: true });
   }
 );
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
