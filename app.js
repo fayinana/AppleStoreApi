@@ -81,12 +81,11 @@ app.use(
 app.use(compression());
 app.use(cookieParser());
 
-app.post(
-  "/webhook",
-  bodyParser.raw({ type: "application/json" }),
-  (req, res) => {
+app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
+  let event = req.body;
+
+  if (process.env.STRIPE_WEBHOOK_SECRET) {
     const sig = req.headers["stripe-signature"];
-    let event;
     try {
       event = stripe.webhooks.constructEvent(
         req.body,
@@ -98,20 +97,20 @@ app.post(
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
     switch (event.type) {
-      case "checkout.session.succeeded":
+      case "checkout.session.completed":
         const paymentIntent = event.data.object;
         updateOrderStatus(paymentIntent.metadata.orderId, "paid");
         break;
-      case "checkout.session.failed":
+      case "payment_intent.payment_failed":
         const paymentFailedIntent = event.data.object;
         updateOrderStatus(paymentFailedIntent.metadata.orderId, "failed");
         break;
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-    res.json({ received: true });
   }
-);
+  res.json({ received: true });
+});
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);

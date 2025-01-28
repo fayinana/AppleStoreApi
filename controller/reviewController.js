@@ -10,6 +10,9 @@ import {
 export const setProductUserIds = (req, res, next) => {
   if (!req.body.product) req.body.product = req.params.productId;
   if (!req.body.user) req.body.user = req.user._id;
+  console.log("====================================");
+  console.log(req.body);
+  console.log("====================================");
   next();
 };
 

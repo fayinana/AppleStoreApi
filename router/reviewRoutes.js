@@ -15,7 +15,7 @@ const router = Router({ mergeParams: true });
 router
   .route("/")
   .get(getAllReviews)
-  .post(protect, restrictTo("user"), setProductUserIds, createReview);
+  .post(protect, restrictTo("user", "admin"), setProductUserIds, createReview);
 
 router
   .route("/:id")

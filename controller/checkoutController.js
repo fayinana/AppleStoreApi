@@ -75,6 +75,9 @@ export const createCheckoutSession = catchAsync(async (req, res, next) => {
         },
       },
     ],
+    metadata: {
+      orderId: newOrder._id.toString(),
+    },
   });
 
   newOrder.paymentIntentId = session.id;
